@@ -1,5 +1,8 @@
 package com.lautaro.curso.app.interceptor.springboot_interceptor.interceptors;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.jspecify.annotations.Nullable;
@@ -12,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
 
 @Component("timeInterceptor")
 public class LoadingTimeInterceptor implements HandlerInterceptor{
@@ -30,7 +34,18 @@ public class LoadingTimeInterceptor implements HandlerInterceptor{
         Random random = new Random();
         int delay = random.nextInt(500);
         Thread.sleep(delay);
-        return true;
+        //return true;
+
+        Map<String,String> json = new HashMap<>();
+        json.put("error", "No tenes acceso a la pagina ");
+        json.put("date", new Date().toString());
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(json);
+        response.setContentType("application/json");
+        response.setStatus(401);
+        response.getWriter().write(jsonString);
+        return false;
     }
 
     @Override
